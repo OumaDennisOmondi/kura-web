@@ -1,0 +1,9 @@
+.PhoneInput{
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  
+}
+.PhoneInput:focus{
+    outline: 0;
+    border-color: #A78BFA;
+}
