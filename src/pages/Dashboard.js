@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-
+import { notify, makeRequest } from "../helpers";
+import { BASE_URL, AUTH_URL } from "../urls";
+import BarLoader from "../assets/img/bar-loader.svg";
 import InfoCard from "../components/Cards/InfoCard";
 import TargetCard from "../components/Cards/TargetCard";
 import ChartCard from "../components/Chart/ChartCard";
@@ -33,24 +35,38 @@ import {
 } from "../utils/demo/chartsData";
 
 function Dashboard() {
-  const [page, setPage] = useState(1);
-  const [data, setData] = useState([]);
-  const [avators, setAvators] = useState([male, female]);
-
+  const [stats, setStats] = useState(false);
+  const [loading, setLoading] = useState(false);
   // pagination setup
-  const resultsPerPage = 10;
-  const totalResults = response.length;
 
-  // pagination change control
-  function onPageChange(p) {
-    setPage(p);
-  }
+  // paginatio
+  const getStats = async () => {
+    const url = BASE_URL + "/stats";
+    setLoading(true);
+    const res = await makeRequest(url);
+    console.log(res);
+    setLoading(false);
+    if (res.status === 200) {
+      const stats = res.data.data;
+
+      setStats(stats);
+      console.log("stats", stats);
+
+      //notifications
+      notify("Success", "Polls Refreshed", "success");
+    } else if (res.status !== 200) {
+      const err = res.response;
+      console.error(err);
+      //notifications
+      notify("Error", "Something went Wrong", "danger");
+    }
+  };
 
   // on page change, load new sliced data
   // here you would make another server request for new data
   useEffect(() => {
-    setData(response.slice((page - 1) * resultsPerPage, page * resultsPerPage));
-  }, [page]);
+    getStats();
+  }, []);
 
   return (
     <>
@@ -59,152 +75,131 @@ function Dashboard() {
 
       {/* <!-- Cards --> */}
       <div className="grid gap-6 mb-16 md:grid-cols-2 xl:grid-cols-5">
-        <InfoCard title="Total Targets" value="500">
+        <InfoCard title="Total Constituencies" value="6">
           <RoundIcon
-            icon={"fas fa-server"}
+            icon={"fas fa-globe"}
             iconColorClass="text-orange-500 dark:text-orange-100"
             bgColorClass="bg-orange-100 dark:bg-orange-500"
             className="mr-4"
           />
         </InfoCard>
-        <InfoCard title="Total Experiments" value="1200">
+        <InfoCard title="Total Wards" value="30">
           <RoundIcon
-            icon={"fas fa-bolt"}
+            icon={"fas fa-map"}
             iconColorClass="text-orange-500 dark:text-orange-100"
             bgColorClass="bg-orange-100 dark:bg-orange-500"
             className="mr-4"
           />
         </InfoCard>
-        <InfoCard title="Running Experiments" value="10">
+        <InfoCard title="Total Registration Centres" value="513">
           <RoundIcon
-            icon={"fas fa-spinner"}
+            icon={"fas fa-map-marked"}
             iconColorClass="text-blue-500 dark:text-orange-100"
             bgColorClass="bg-blue-100 dark:bg-orange-500"
             className="mr-4"
           />
         </InfoCard>
-        <InfoCard title="Scheduled Experiments" value="5">
+        <InfoCard title="Total Polling Stations" value="609">
           <RoundIcon
-            icon={"fas fa-stopwatch"}
+            icon={"fas fa-map-marker-alt"}
             iconColorClass="text-blue-500 dark:text-orange-100"
             bgColorClass="bg-blue-100 dark:bg-orange-500"
             className="mr-4"
           />
         </InfoCard>
-
-        <InfoCard title="Failed Experiments" value="100">
+        <InfoCard title="Total Registered Voters" value="207758">
           <RoundIcon
-            icon={"fas fa-exclamation-triangle"}
+            icon={"fas fa-map-marker-alt"}
             iconColorClass="text-blue-500 dark:text-orange-100"
             bgColorClass="bg-blue-100 dark:bg-orange-500"
             className="mr-4"
           />
         </InfoCard>
       </div>
-      <SectionTitle>
-        Get started by addressing common failure modes using Vurugu's
-        Recommended Scenarios.
-      </SectionTitle>
-      <p className="text-md mb-5 text-gray-600 dark:text-gray-400">
-        Explore these components to test common failure modes.
-      </p>
-      <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-5">
-        <TargetCard
-          title="Services/Apps"
-          // image="Male"
-          value="Never Attacked"
-        >
-          <img className="rounded-full w-20 h-20" src={service} alt={"icon"} />
-        </TargetCard>
-        <TargetCard
-          title="EC2 Instances/Hosts"
-          // image="Male"
-          value="12 Experiments"
-        >
-          <img className="rounded-full w-20 h-20" src={ec2} alt={"icon"} />
-        </TargetCard>
-        <TargetCard
-          title="Container"
-          // image="Male"
-          value="25 Attacked"
-        >
-          <img
-            className="rounded-full w-20 h-20"
-            src={container}
-            alt={"icon"}
+      <div className="flex justify-start flex-col flex-1">
+        {loading && (
+          <>
+            <img src={BarLoader} className="w-24 h-16" alt="refreshing.." />
+            <SectionTitle>Getting new polls....</SectionTitle>
+          </>
+        )}
+      </div>
+      <PageTitle>Poll Graphs</PageTitle>
+      <div className="grid gap-6 mb-8 md:grid-cols-2">
+        <ChartCard title="Aspirants">
+          <Doughnut
+            {...doughnutOptions([
+              stats.aspirant_A,
+              stats.aspirant_B,
+              stats.aspirant_B,
+            ])}
           />
-        </TargetCard>
-        <TargetCard
-          title="Container Ochestrations"
-          // image="Male"
-          value="Never Attacked"
-        >
-          <img className="rounded-full w-20 h-20" src={eks} alt={"icon"} />
-        </TargetCard>
+          <ChartLegend legends={doughnutLegends} />
+        </ChartCard>
 
-        <TargetCard
-          title="Databases"
-          // image="Male"
-          value="Never Attacked"
-        >
-          <img className="rounded-full w-20 h-20" src={db} alt={"icon"} />
-        </TargetCard>
+        <ChartCard title="Stats">
+          <PageTitle>Current Transmission and Tally Stats</PageTitle>
+          <SectionTitle>Total Votes Cast :{stats.totals_votes}</SectionTitle>
+          <SectionTitle>
+            Total Spoiled Votes : {stats.spoiled_votes}
+          </SectionTitle>
+          <SectionTitle>
+            Tallying {stats.total_transmision} of 609 Polling Stations
+          </SectionTitle>
+          <SectionTitle>
+            Tansmission Percenatge :{" "}
+            {((stats.total_transmision / 609) * 100).toFixed(2)}%
+          </SectionTitle>
+        </ChartCard>
       </div>
 
-      {/*<PageTitle>Recent Tests</PageTitle>
+      <PageTitle>Aspirants</PageTitle>
       <TableContainer>
         <Table>
           <TableHeader>
             <tr>
-              <TableCell>AWS Region/Zone</TableCell>
-              <TableCell>Instance</TableCell>
-              <TableCell>Server</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>Aspirant Names</TableCell>
+              <TableCell>Political Party</TableCell>
+              <TableCell>Total Votes</TableCell>
+              <TableCell>% Votes</TableCell>
             </tr>
           </TableHeader>
           <TableBody>
-            {data.map((chaos, i) => (
-              <TableRow key={i}>
-                <TableCell>
-                  <div className="flex items-center text-sm">
-                    <RoundIcon
-                      icon={"fab fa-aws fa-2x"}
-                      iconColorClass="text-orange-500 dark:text-orange-100"
-                      bgColorClass="bg-orange-100 dark:bg-orange-500"
-                      className="mr-4"
-                    />
-                    <div>
-                      <p className="font-semibold">{chaos.name}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                        {chaos.zone}
-                      </p>
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm"> {chaos.instance}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{chaos.server_url}</span>
-                </TableCell>
-                <TableCell>
-                  <Badge type={chaos.status.status}>
-                    {chaos.status.description}
-                  </Badge>
-                </TableCell>
-              </TableRow>
-            ))}
+            <TableRow>
+              <TableCell>Adan Hassan</TableCell>
+              <TableCell>Jubilee</TableCell>
+              <TableCell>{stats.aspirant_A}</TableCell>
+              <TableCell>
+                {((stats.aspirant_A / stats.totals_votes) * 100).toFixed(2)}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Ahmed Abdullahi</TableCell>
+              <TableCell>ODM</TableCell>
+              <TableCell>{stats.aspirant_B}</TableCell>
+              <TableCell>
+                {((stats.aspirant_B / stats.totals_votes) * 100).toFixed(2)}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Ahmed Ali Mukhtar</TableCell>
+              <TableCell>UDA</TableCell>
+              <TableCell>{stats.aspirant_B}</TableCell>
+              <TableCell>
+                {((stats.aspirant_B / stats.totals_votes) * 100).toFixed(2)}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Siyad Abdullahi</TableCell>
+              <TableCell>Wiper</TableCell>
+              <TableCell>{stats.aspirant_B}</TableCell>
+              <TableCell>
+                {((stats.aspirant_A / stats.totals_votes) * 100).toFixed(2)}
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-        <TableFooter>
-          <Pagination
-            totalResults={totalResults}
-            resultsPerPage={resultsPerPage}
-            label="Table navigation"
-            onChange={onPageChange}
-          />
-        </TableFooter>
-      </TableContainer>*/}
+      </TableContainer>
     </>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { notify, makeRequest } from "../helpers";
-import { POLLING_STATIONS, AUTH_URL } from "../urls";
+import { BASE_URL, AUTH_URL } from "../urls";
 import BarLoader from "../assets/img/bar-loader.svg";
 
 import InfoCard from "../components/Cards/InfoCard";
@@ -53,20 +53,26 @@ function PollingStations() {
   const [data, setData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isShow, setIsShow] = useState(false);
-  const [constituency, setConstituency] = useState({});
-  const [constituencies, setConstituencies] = useState([]);
+  const [polling_station, setPolling_station] = useState({});
+  const [polling_stations, setPolling_stations] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
-
+  const [denomination, setDenomination] = useState(
+    "All 6 Wajir Constituencies"
+  );
+  const [query, setQuery] = useState("");
   // pagination setup
   const resultsPerPage = 10;
-  const targets_data = React.useMemo(() => constituencies, [constituencies]);
+  const polling_stations_data = React.useMemo(
+    () => polling_stations,
+    [polling_stations]
+  );
   // pagination change control
   function onPageChange(p) {
     setPage(p);
     console.log("page" + p);
     setData(
-      targets_data.slice((p - 1) * resultsPerPage, page * resultsPerPage)
+      polling_stations_data.slice((p - 1) * resultsPerPage, p * resultsPerPage)
     );
     console.log(data.length);
   }
@@ -74,20 +80,77 @@ function PollingStations() {
     setIsOpen(false);
     setIsShow(false);
   }
-  const getConstituencies = async () => {
-    const url = POLLING_STATIONS + "/constituency";
+  const getpolling_stations = async () => {
+    let url = "";
+    if (denomination) {
+      url = BASE_URL + "/searchQ/reg_centre/?q=" + query;
+    } else {
+      let criteria = new URLSearchParams(window.location.search).get(
+        "criteria"
+      );
+      let const_code = new URLSearchParams(window.location.search).get(
+        "const_code"
+      );
+      let const_name = new URLSearchParams(window.location.search).get(
+        "const_name"
+      );
+      let caw_name = new URLSearchParams(window.location.search).get(
+        "caw_name"
+      );
+      let caw_code = new URLSearchParams(window.location.search).get(
+        "caw_code"
+      );
+      let reg_centre_name = new URLSearchParams(window.location.search).get(
+        "reg_centre_name"
+      );
+      let reg_centre_code = new URLSearchParams(window.location.search).get(
+        "reg_centre_code"
+      );
+      switch (criteria) {
+        case "by-const":
+          url = BASE_URL + "/polling-stations-by-const/" + const_code;
+          setDenomination(const_name + " Constituency");
+          break;
+        case "by-caw":
+          url =
+            BASE_URL +
+            "/polling-stations-by-ward/" +
+            const_code +
+            "/" +
+            caw_code;
+          setDenomination(caw_name + " Ward");
+          break;
+        case "by-centre":
+          url =
+            BASE_URL +
+            "/polling-stations-by-centre/" +
+            const_code +
+            "/" +
+            caw_code +
+            "/" +
+            reg_centre_code;
+          setDenomination(reg_centre_name + " Registration Centre");
+          break;
+        default:
+          url = BASE_URL + "/polling-stations";
+      }
+    }
+
     setLoading(true);
     const res = await makeRequest(url);
     console.log(res);
     setLoading(false);
     if (res.status === 200) {
-      const constituencies = res.data.data;
-      setTotalResults(constituencies.length);
+      const polling_stations = res.data.data;
+      setTotalResults(polling_stations.length);
 
-      setConstituencies(constituencies);
+      setPolling_stations(polling_stations);
       //set 1st 10 records for initial render
       setData(
-        constituencies.slice((page - 1) * resultsPerPage, page * resultsPerPage)
+        polling_stations.slice(
+          (page - 1) * resultsPerPage,
+          page * resultsPerPage
+        )
       );
       //notifications
       notify("Success", "PollingStations fetched", "success");
@@ -102,26 +165,39 @@ function PollingStations() {
   // on page change, load new sliced data
   // here you would make another server request for new data
   useEffect(() => {
-    //get constituencies
-    //setData(constituencies.slice((page - 1) * resultsPerPage, page * resultsPerPage));
-    getConstituencies();
+    //get polling_stations
+    //setData(polling_stations.slice((page - 1) * resultsPerPage, page * resultsPerPage));
+    getpolling_stations();
   }, []);
 
   return (
     <>
-      <PageTitle>PollingStations</PageTitle>
-      <CTA description="All PollingStations in Wajir County.">
-        <Button
-          onClick={() => {
-            setIsOpen(true);
-          }}
-          className="text-white  rounded font-sm"
-        >
-          New Constituency &nbsp;<i className="fas fa-plus"></i>
-        </Button>
-      </CTA>
+      <PageTitle>Polling Stations</PageTitle>
+      <CTA description={"Polling Stations in " + denomination}></CTA>
 
-      <div className="flex justify-start flex-1 my-10"></div>
+      <div className="flex justify-start flex-1 my-10">
+        <SectionTitle>Polling Stations in {denomination}</SectionTitle>
+      </div>
+      <div className="flex justify-start flex-1 lg:mr-32 mb-5">
+        <div className="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
+          <div className="absolute inset-y-0 flex items-center pl-2">
+            <SearchIcon className="w-4 h-4" aria-hidden="true" />
+          </div>
+          <Input
+            className="pl-8 text-gray-700"
+            placeholder="Search for Polling Stations by Code or Name"
+            aria-label="Search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+        <Button
+          className=" bg-blue-500"
+          onClick={() => getpolling_stations(true)}
+        >
+          Search
+        </Button>
+      </div>
       <div className="flex justify-start flex-1">
         {loading && (
           <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
@@ -134,29 +210,56 @@ function PollingStations() {
             <tr>
               <TableCell>Code</TableCell>
               <TableCell>Name</TableCell>
-
+              <TableCell>Registered Voters</TableCell>
+              <TableCell>Aspirant A</TableCell>
+              <TableCell>Aspirant B</TableCell>
+              <TableCell>Spoiled Votes</TableCell>
+              <TableCell>Total Votes</TableCell>
               <TableCell>Action</TableCell>
             </tr>
           </TableHeader>
           <TableBody>
             {data &&
-              data.map((constituency, i) => (
+              data.map((polling_staion, i) => (
                 <TableRow key={i}>
                   <TableCell>
                     <Badge type="success" className="py-1 px-4">
-                      {constituency.const_code}
+                      {polling_staion.polling_station_code}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm">{constituency.const_name}</span>
+                    <span className="text-sm">
+                      {polling_staion.polling_station_name}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {polling_staion.registered_voters}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">{polling_staion.aspirant_A}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">{polling_staion.aspirant_B}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {polling_staion.spoiled_votes}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {polling_staion.total_votes}
+                    </span>
                   </TableCell>
 
                   <TableCell>
                     <Button
                       size="small"
                       onClick={() => {
-                        console.log(constituency);
-                        setConstituency(constituency);
+                        console.log(polling_staion);
+                        setPolling_station(polling_staion);
                         setIsShow(true);
                       }}
                     >

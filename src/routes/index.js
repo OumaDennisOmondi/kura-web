@@ -4,13 +4,12 @@ import { auth, notify } from "../helpers";
 
 // use lazy for better code splitting, a.k.a. load faster
 const Dashboard = lazy(() => import("../pages/Dashboard"));
-const Scenarios = lazy(() => import("../pages/Scenarios"));
-const StatusChecks = lazy(() => import("../pages/StatusChecks"));
 const Constituency = lazy(() => import("../pages/Constituencies"));
 const Wards = lazy(() => import("../pages/Wards"));
 const PollingStations = lazy(() => import("../pages/PollingStations"));
 const RegistrationCentres = lazy(() => import("../pages/RegistrationCentres"));
-const Aspirant = lazy(() => import("../pages/Aspirants"))
+const Aspirant = lazy(() => import("../pages/Aspirants"));
+const Agents = lazy(() => import("../pages/Agents"));
 const Page404 = lazy(() => import("../pages/404"));
 const Page401 = lazy(() => import("../pages/401"));
 const Blank = lazy(() => import("../pages/Blank"));
@@ -34,16 +33,12 @@ const routes = [
     component: Dashboard, // view rendered
   },
   {
-    path: "/scenarios",
-    component: Scenarios,
-  },
-  {
-    path: "/status-checks",
-    component: StatusChecks,
-  },
-  {
     path: "/aspirants",
     component: Aspirant,
+  },
+  {
+    path: "/agents",
+    component: Agents,
   },
   {
     path: "/constituencies",
@@ -54,11 +49,11 @@ const routes = [
     component: Wards,
   },
   {
-    path: "/stations",
+    path: "/registration-centres",
     component: RegistrationCentres,
   },
   {
-    path: "/stations",
+    path: "/polling-stations",
     component: PollingStations,
   },
   {

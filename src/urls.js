@@ -2,11 +2,11 @@
 //  "https://kura-management-api.herokuapp.com/api/v1/";
 //export const BASE_URL = "http://127.0.0.1:8000/apps/admin-reports/api/v1/";
 
-export const BASE_URL = "https://kuraapi.herokuapp.com/api/v1";
+//export const BASE_URL = "https://kuraapi.herokuapp.com/api/v1";
 
+export const BASE_URL = "https://2237-41-212-84-192.eu.ngrok.io/api/v1";
 // export const BASE_URL = !process.env.NODE_ENV || process.env.NODE_ENV === 'development' ? process.env.BASE_URL : process.env.REACT_APP_BASE_URL
 
-export const DENOMINATIOS_URL = BASE_URL + "denomination";
 
 export const CONSTS = BASE_URL + "constituencies";
 
@@ -29,3 +29,9 @@ export const AWS_CONFIG = BASE_URL + "aws";
 export const USERS = BASE_URL + "user";
 
 export const OTP_VERIFY_URL = "";
+
+
+
+
+
+

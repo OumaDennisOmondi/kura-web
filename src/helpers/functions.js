@@ -2,13 +2,12 @@ import axios from "axios";
 import { auth } from "../helpers";
 
 export const makeRequest = async (url) => {
-  const token = auth.getToken().access_token || "";
+  const token = "test";
+  //const token = auth.getToken().access_token || "";
   let response = null;
   const headers = {
-    Authorization: "Bearer " + token,
-  }
-  ;
-
+   // Authorization: "Bearer " + token,
+  };
   try {
     response = await axios.get(url, { headers });
   } catch (error) {
@@ -52,4 +51,4 @@ export const makeRequest = async (url) => {
   //      console.log(err);
   //    })
   //    .finally(() => {});
-};
+};;

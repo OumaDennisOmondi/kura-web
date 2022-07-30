@@ -39,4 +39,74 @@ export default [
       description: "Failed!",
     },
   },
+  {
+    name: "Asia Pacific",
+    zone: "ap-southeast-1",
+    instance: "fafanuka-2a",
+    server_url: "fafanuka.safcom.net",
+    status: {
+      status: "danger",
+      description: "Failed!",
+    },
+  },
+  {
+    name: "Asia Pacific",
+    zone: "ap-southeast-1",
+    instance: "fafanuka-2a",
+    server_url: "fafanuka.safcom.net",
+    status: {
+      status: "danger",
+      description: "Failed!",
+    },
+  },
+  {
+    name: "Asia Pacific",
+    zone: "ap-southeast-1",
+    instance: "fafanuka-2a",
+    server_url: "fafanuka.safcom.net",
+    status: {
+      status: "danger",
+      description: "Failed!",
+    },
+  },
+  {
+    name: "Asia Pacific",
+    zone: "ap-southeast-1",
+    instance: "fafanuka-2a",
+    server_url: "fafanuka.safcom.net",
+    status: {
+      status: "danger",
+      description: "Failed!",
+    },
+  },
+  {
+    name: "Asia Pacific",
+    zone: "ap-southeast-1",
+    instance: "fafanuka-2a",
+    server_url: "fafanuka.safcom.net",
+    status: {
+      status: "danger",
+      description: "Failed!",
+    },
+  },
+  {
+    name: "Asia Pacific",
+    zone: "ap-southeast-1",
+    instance: "fafanuka-2a",
+    server_url: "fafanuka.safcom.net",
+    status: {
+      status: "danger",
+      description: "Failed!",
+    },
+  },
+  {
+    name: "Asia Pacific",
+    zone: "ap-southeast-1",
+    instance: "fafanuka-2a",
+    server_url: "fafanuka.safcom.net",
+    status: {
+      status: "danger",
+      description: "Failed!",
+    },
+  },
 ];

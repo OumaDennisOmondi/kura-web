@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { notify, makeRequest } from "../helpers";
-import { CONSTS, AUTH_URL } from "../urls";
+import { BASE_URL, AUTH_URL } from "../urls";
 import BarLoader from "../assets/img/bar-loader.svg";
 
 import InfoCard from "../components/Cards/InfoCard";
@@ -75,7 +76,7 @@ function Constituencies() {
     setIsShow(false);
   }
   const getConstituencies = async () => {
-    const url = CONSTS + "/constituency";
+    const url = BASE_URL + "/constituencies";
     setLoading(true);
     const res = await makeRequest(url);
     console.log(res);
@@ -109,18 +110,8 @@ function Constituencies() {
 
   return (
     <>
-    
       <PageTitle>Constituencies</PageTitle>
-      <CTA description="All Constituencies in Wajir County.">
-        <Button
-          onClick={() => {
-            setIsOpen(true);
-          }}
-          className="text-white  rounded font-sm"
-        >
-          New Constituency &nbsp;<i className="fas fa-plus"></i>
-        </Button>
-      </CTA>
+      <CTA description="6 Constituencies in Wajir County."></CTA>
 
       <div className="flex justify-start flex-1 my-10"></div>
       <div className="flex justify-start flex-1">
@@ -135,7 +126,11 @@ function Constituencies() {
             <tr>
               <TableCell>Code</TableCell>
               <TableCell>Name</TableCell>
-
+              <TableCell>Registered Voters</TableCell>
+              <TableCell>Aspirant A</TableCell>
+              <TableCell>Aspirant B</TableCell>
+              <TableCell>Spoiled Votes</TableCell>
+              <TableCell>Total Votes</TableCell>
               <TableCell>Action</TableCell>
             </tr>
           </TableHeader>
@@ -143,7 +138,6 @@ function Constituencies() {
             {data &&
               data.map((constituency, i) => (
                 <TableRow key={i}>
-                  
                   <TableCell>
                     <Badge type="success" className="py-1 px-4">
                       {constituency.const_code}
@@ -152,18 +146,63 @@ function Constituencies() {
                   <TableCell>
                     <span className="text-sm">{constituency.const_name}</span>
                   </TableCell>
-                  
                   <TableCell>
-                    <Button
-                      size="small"
-                      onClick={() => {
-                        console.log(constituency);
-                        setConstituency(constituency);
-                        setIsShow(true);
-                      }}
+                    <span className="text-sm">
+                      {constituency.registered_voters}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">{constituency.aspirant_A}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">{constituency.aspirant_B}</span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {constituency.spoiled_votes}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">{constituency.total_votes}</span>
+                  </TableCell>
+
+                  <TableCell>
+                    <Link
+                      to={
+                        "/app/wards?criteria=by-const&const_code=" +
+                        constituency.const_code +
+                        "&const_name=" +
+                        constituency.const_name
+                      }
                     >
-                      View
-                    </Button>
+                      <Button size="small" className="mr-1">
+                        Wards
+                      </Button>
+                    </Link>
+                    <Link
+                      to={
+                        "/app/registration-centres?criteria=by-const&const_code=" +
+                        constituency.const_code +
+                        "&const_name=" +
+                        constituency.const_name
+                      }
+                    >
+                      <Button size="small" className="mr-1">
+                        Reg.Centres
+                      </Button>
+                    </Link>
+                    <Link
+                      to={
+                        "/app/polling-stations?criteria=by-const&const_code=" +
+                        constituency.const_code +
+                        "&const_name=" +
+                        constituency.const_name
+                      }
+                    >
+                      <Button size="small" className="mr-1">
+                        P.Sations
+                      </Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))}

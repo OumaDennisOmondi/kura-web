@@ -12,50 +12,39 @@ import { auth, notify } from "../helpers";
 let routes = [
   {
     path: "/app/dashboard", // the url
-    icon: "fas fa-tachometer", // the component being exported from icons/index.js
+    icon: "fas fa-tachometer-alt", // the component being exported from icons/index.js
     name: "Dashboard", // name that appear in Sidebar
   },
+
   {
-    path: "/app/tally",
-    name: "Tally",
-    icon: "far fa-file-alt",
-  },
-  {
-    icon: "fas fa-server",
-    name: "Aspirants",
-    path: "/app/aspirants",
-  },
-  {
-    icon: "fas fa-bolt",
-    name: "Agents",
-    path: "/app/experiments",
-  },
-  {
-    icon: "fas fa-hourglass",
+    icon: "fas fa-globe",
     name: "Constituencies",
     path: "/app/constituencies",
   },
   {
-    icon: "fas fa-chart-pie",
+    icon: "fas fa-map",
     name: "Wards",
     path: "/app/wards",
   },
   {
-    icon: "fas fa-chart-pie",
-    name: "RegistrationCentres",
+    icon: "fas fa-map-marked",
+    name: "Registration Centres",
     path: "/app/registration-centres",
   },
   {
-    icon: "fas fa-chart-pie",
-    name: "PollingStations",
+    icon: "fas fa-map-marker-alt",
+    name: "Polling Stations",
     path: "/app/polling-stations",
   },
-
-
   {
     icon: "fas fa-users",
-    name: "Users",
-    path: "/app/users",
+    name: "Aspirants",
+    path: "/app/aspirants",
+  },
+  {
+    icon: "fas fa-user-edit",
+    name: "Agents",
+    path: "/app/agents",
   },
 ];
 

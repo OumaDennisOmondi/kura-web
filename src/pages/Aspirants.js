@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { notify, makeRequest } from "../helpers";
-import { ASPIRANTS_URL, AUTH_URL } from "../urls";
+import { BASE_URL, AUTH_URL } from "../urls";
 import BarLoader from "../assets/img/bar-loader.svg";
 
 import InfoCard from "../components/Cards/InfoCard";
@@ -75,8 +75,8 @@ function Aspirants() {
     setIsOpen(false);
     setIsShow(false);
   }
-  const getStations = async () => {
-    const url = ASPIRANTS_URL + "/aspirant";
+  const getAspirants = async () => {
+    const url = BASE_URL + "/aspirant/";
     setLoading(true);
     const res = await makeRequest(url);
     console.log(res);
@@ -105,7 +105,7 @@ function Aspirants() {
   useEffect(() => {
     //get aspirants
     //setData(aspirants.slice((page - 1) * resultsPerPage, page * resultsPerPage));
-    getStations();
+    getAspirants();
   }, []);
 
   return (
@@ -113,27 +113,18 @@ function Aspirants() {
       {/*<AddConstituencyModal
         isOpen={isOpen}
         onClose={closeModal}
-        refresh={getStations}
+        refresh={getAspirants}
       />
       {aspirant && (
         <ShowConstituencyModal
           isOpen={isShow}
           onClose={closeModal}
           aspirant={aspirant}
-          refresh={getStations}
+          refresh={getAspirants}
         />
       )}*/}
       <PageTitle>Aspirants</PageTitle>
-      <CTA description="All Aspirants in Wajir County.">
-        <Button
-          onClick={() => {
-            setIsOpen(true);
-          }}
-          className="text-white  rounded font-sm"
-        >
-          New Aspirant &nbsp;<i className="fas fa-plus"></i>
-        </Button>
-      </CTA>
+      <CTA description="All Aspirants in Wajir County."></CTA>
 
       <div className="flex justify-start flex-1 my-10"></div>
       <div className="flex justify-start flex-1">
@@ -157,19 +148,18 @@ function Aspirants() {
               data.map((aspirant, i) => (
                 <TableRow key={i}>
                   <TableCell>
-                    
-                      {aspirant.first_name + " " +aspirant.last_name}
-                   
+                    {aspirant.first_name + " " + aspirant.last_name}
                   </TableCell>
                   <TableCell>
                     <span className="text-sm">{aspirant.political_party}</span>
                   </TableCell>
-                  
+
                   <TableCell>
-                      <Badge type="success" className="py-1 px-4">
-                    {0}</Badge>
+                    <Badge type="success" className="py-1 px-4">
+                      {0}
+                    </Badge>
                   </TableCell>
-                  
+
                   <TableCell>
                     <Button
                       size="small"

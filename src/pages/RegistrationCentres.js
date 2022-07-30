@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { notify, makeRequest } from "../helpers";
-import { REGISTRATION_CENTRES, AUTH_URL } from "../urls";
+import { BASE_URL, AUTH_URL } from "../urls";
 import BarLoader from "../assets/img/bar-loader.svg";
 
 import InfoCard from "../components/Cards/InfoCard";
@@ -53,20 +54,27 @@ function RegistrationCentres() {
   const [data, setData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isShow, setIsShow] = useState(false);
-  const [constituency, setConstituency] = useState({});
-  const [constituencies, setConstituencies] = useState([]);
+  const [registration_centre, setregistration_centre] = useState({});
+  const [registration_centres, setregistration_centres] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [denomination, setDenomination] = useState(
+    "All 6 Wajir Constituencies"
+  );
+  const [query, setQuery] = useState("");
 
   // pagination setup
   const resultsPerPage = 10;
-  const targets_data = React.useMemo(() => constituencies, [constituencies]);
+  const registration_centres_data = React.useMemo(
+    () => registration_centres,
+    [registration_centres]
+  );
   // pagination change control
   function onPageChange(p) {
     setPage(p);
     console.log("page" + p);
     setData(
-      targets_data.slice((p - 1) * resultsPerPage, page * resultsPerPage)
+      registration_centres.slice((p - 1) * resultsPerPage, p * resultsPerPage)
     );
     console.log(data.length);
   }
@@ -74,20 +82,60 @@ function RegistrationCentres() {
     setIsOpen(false);
     setIsShow(false);
   }
-  const getConstituencies = async () => {
-    const url = REGISTRATION_CENTRES + "/constituency";
+  const getregistration_centres = async () => {
+    let url = "";
+    if (denomination) {
+      url = BASE_URL + "/searchQ/reg_centre/?q=" + query;
+    } else {
+      let criteria = new URLSearchParams(window.location.search).get(
+        "criteria"
+      );
+      let const_code = new URLSearchParams(window.location.search).get(
+        "const_code"
+      );
+      let const_name = new URLSearchParams(window.location.search).get(
+        "const_name"
+      );
+      let caw_name = new URLSearchParams(window.location.search).get(
+        "caw_name"
+      );
+      let caw_code = new URLSearchParams(window.location.search).get(
+        "caw_code"
+      );
+
+      switch (criteria) {
+        case "by-const":
+          url = BASE_URL + "/registration-centre-by-const/" + const_code;
+          setDenomination(const_name + " Constituency");
+          break;
+        case "by-caw":
+          url =
+            BASE_URL +
+            "/registration-centre-by-ward/" +
+            const_code +
+            "/" +
+            caw_code;
+          setDenomination(caw_name + " Ward");
+          break;
+        default:
+          url = BASE_URL + "/registration-centre";
+      }
+    }
     setLoading(true);
     const res = await makeRequest(url);
     console.log(res);
     setLoading(false);
     if (res.status === 200) {
-      const constituencies = res.data.data;
-      setTotalResults(constituencies.length);
+      const registration_centres = res.data.data;
+      setTotalResults(registration_centres.length);
 
-      setConstituencies(constituencies);
+      setregistration_centres(registration_centres);
       //set 1st 10 records for initial render
       setData(
-        constituencies.slice((page - 1) * resultsPerPage, page * resultsPerPage)
+        registration_centres.slice(
+          (page - 1) * resultsPerPage,
+          page * resultsPerPage
+        )
       );
       //notifications
       notify("Success", "RegistrationCentres fetched", "success");
@@ -102,26 +150,41 @@ function RegistrationCentres() {
   // on page change, load new sliced data
   // here you would make another server request for new data
   useEffect(() => {
-    //get constituencies
-    //setData(constituencies.slice((page - 1) * resultsPerPage, page * resultsPerPage));
-    getConstituencies();
+    //get registration_centres
+    //setData(registration_centres.slice((page - 1) * resultsPerPage, page * resultsPerPage));
+    getregistration_centres();
   }, []);
 
   return (
     <>
-      <PageTitle>RegistrationCentres</PageTitle>
-      <CTA description="All RegistrationCentres in Wajir County.">
-        <Button
-          onClick={() => {
-            setIsOpen(true);
-          }}
-          className="text-white  rounded font-sm"
-        >
-          New Constituency &nbsp;<i className="fas fa-plus"></i>
-        </Button>
-      </CTA>
+      <PageTitle>Registration Centres</PageTitle>
+      <CTA description={"Registration Centres in " + denomination}></CTA>
 
-      <div className="flex justify-start flex-1 my-10"></div>
+      <div className="flex justify-start items-center flex-1 my-10">
+        <SectionTitle>
+          Currently Showing Registration Centers in {denomination}
+        </SectionTitle>
+      </div>
+      <div className="flex justify-start flex-1 lg:mr-32 mb-5">
+        <div className="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
+          <div className="absolute inset-y-0 flex items-center pl-2">
+            <SearchIcon className="w-4 h-4" aria-hidden="true" />
+          </div>
+          <Input
+            className="pl-8 text-gray-700"
+            placeholder="Search for Registration Centres by Code or Name"
+            aria-label="Search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+        <Button
+          className=" bg-blue-500"
+          onClick={() => getregistration_centres(true)}
+        >
+          Search
+        </Button>
+      </div>
       <div className="flex justify-start flex-1">
         {loading && (
           <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
@@ -134,34 +197,73 @@ function RegistrationCentres() {
             <tr>
               <TableCell>Code</TableCell>
               <TableCell>Name</TableCell>
-
+              <TableCell>Registered Voters</TableCell>
+              <TableCell>Aspirant A</TableCell>
+              <TableCell>Aspirant B</TableCell>
+              <TableCell>Spoiled Votes</TableCell>
+              <TableCell>Total Votes</TableCell>
               <TableCell>Action</TableCell>
             </tr>
           </TableHeader>
           <TableBody>
             {data &&
-              data.map((constituency, i) => (
+              data.map((registration_centre, i) => (
                 <TableRow key={i}>
                   <TableCell>
                     <Badge type="success" className="py-1 px-4">
-                      {constituency.const_code}
+                      {registration_centre.reg_centre_code}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm">{constituency.const_name}</span>
+                    <span className="text-sm">
+                      {registration_centre.reg_centre_name}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {registration_centre.registered_voters}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {registration_centre.aspirant_A}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {registration_centre.aspirant_B}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {registration_centre.spoiled_votes}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {registration_centre.total_votes}
+                    </span>
                   </TableCell>
 
                   <TableCell>
-                    <Button
-                      size="small"
-                      onClick={() => {
-                        console.log(constituency);
-                        setConstituency(constituency);
-                        setIsShow(true);
-                      }}
+                    <Link
+                      to={
+                        "/app/polling-stations?criteria=by-centre&const_code=" +
+                        registration_centre.const_code +
+                        "&const_name=" +
+                        registration_centre.const_name +
+                        "&caw_code=" +
+                        registration_centre.caw_code +
+                        "&caw_name=" +
+                        registration_centre.caw_name +
+                        "&reg_centre_name=" +
+                        registration_centre.reg_centre_name +
+                        "&reg_centre_code=" +
+                        registration_centre.reg_centre_code
+                      }
                     >
-                      View
-                    </Button>
+                      <Button size="small">P.Stations</Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))}

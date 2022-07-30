@@ -6,9 +6,9 @@
   "scripts": {
     "tailwind:dev": "tailwindcss build src/assets/css/tailwind.css -o src/assets/css/tailwind.output.css",
     "tailwind:build": "cross-env NODE_ENV=production postcss src/assets/css/tailwind.css -o src/assets/css/tailwind.output.css",
-    "prestart": "npm run tailwind:dev",
+    "prestart": "yarn run tailwind:dev",
     "start": "set PORT=5000 && react-scripts start",
-    "prebuild": "npm run tailwind:build",
+    "prebuild": "yarn run tailwind:build",
     "build": "react-scripts build",
     "cz": "git-cz",
     "release": "release-it",
@@ -54,17 +54,15 @@
     "tailwindcss": "1.4.6"
   },
   "keywords": [
-    "chaos",
-    "engineering",
-    "platform",
-    "safaricom",
+    "kura platform",
+
     "react"
   ],
   "release-it": {
     "github": {
       "release": true
     },
-    "npm": {
+    "yarn": {
       "publish": false
     },
     "plugins": {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { notify, makeRequest } from "../helpers";
-import { DENOMINATIOS_URL, AUTH_URL } from "../urls";
+import { BASE_URL, AUTH_URL } from "../urls";
 import BarLoader from "../assets/img/bar-loader.svg";
 
 import InfoCard from "../components/Cards/InfoCard";
@@ -25,8 +25,8 @@ import {
   OutlineLogoutIcon,
 } from "../icons";
 import { male, female, ec2, eks, db, service, container } from "../assets/img";
-//import AddConstituencyModal from "../components/Wards/AddConstituencyModal";
-//import ShowConstituencyModal from "../components/Wards/ShowConstituencyModal";
+//import AddConstituencyModal from "../components/Agents/AddConstituencyModal";
+//import ShowConstituencyModal from "../components/Agents/ShowConstituencyModal";
 import {
   TableBody,
   TableContainer,
@@ -49,49 +49,48 @@ import {
   lineLegends,
 } from "../utils/demo/chartsData";
 
-function Wards() {
+function Agents() {
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isShow, setIsShow] = useState(false);
-  const [ward, setWard] = useState({});
-  const [wards, setConstituencies] = useState([]);
+  const [agent, setAgent] = useState({});
+  const [agents, setAgents] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
-
+  const [query, setQuery] = useState("");
   // pagination setup
   const resultsPerPage = 10;
-  const targets_data = React.useMemo(() => wards, [wards]);
+  const agents_data = React.useMemo(() => agents, [agents]);
   // pagination change control
   function onPageChange(p) {
     setPage(p);
     console.log("page" + p);
-    setData(
-      targets_data.slice((p - 1) * resultsPerPage, page * resultsPerPage)
-    );
+    setData(agents.slice((p - 1) * resultsPerPage, p * resultsPerPage));
     console.log(data.length);
   }
   function closeModal() {
     setIsOpen(false);
     setIsShow(false);
   }
-  const getWards = async () => {
-    const url = DENOMINATIOS_URL + "/ward";
+  const getAgents = async (search = false) => {
+    const url = search
+      ? BASE_URL + "/search-agent/?q=" + query
+      : BASE_URL + "/all-agents/";
     setLoading(true);
     const res = await makeRequest(url);
     console.log(res);
     setLoading(false);
     if (res.status === 200) {
-      const wards = res.data.data;
-      setTotalResults(wards.length);
+      const agents = res.data.data;
+      setTotalResults(agents.length);
 
-      setConstituencies(wards);
+      setAgents(agents);
+      console.log("agents", agents);
       //set 1st 10 records for initial render
-      setData(
-        wards.slice((page - 1) * resultsPerPage, page * resultsPerPage)
-      );
+      setData(agents.slice((page - 1) * resultsPerPage, page * resultsPerPage));
       //notifications
-      notify("Success", "Wards fetched", "success");
+      notify("Success", "Agents fetched", "success");
     } else if (res.status !== 200) {
       const err = res.response;
       console.error(err);
@@ -103,39 +102,39 @@ function Wards() {
   // on page change, load new sliced data
   // here you would make another server request for new data
   useEffect(() => {
-    //get wards
-    //setData(wards.slice((page - 1) * resultsPerPage, page * resultsPerPage));
-    getWards();
+    //get agents
+    //setData(agents.slice((page - 1) * resultsPerPage, page * resultsPerPage));
+    getAgents();
   }, []);
 
   return (
     <>
-      {/*<AddConstituencyModal
-        isOpen={isOpen}
-        onClose={closeModal}
-        refresh={getWards}
-      />
-      {ward && (
-        <ShowConstituencyModal
-          isOpen={isShow}
-          onClose={closeModal}
-          ward={ward}
-          refresh={getWards}
-        />
-      )}*/}
-      <PageTitle>Wards</PageTitle>
-      <CTA description="All Wards in Wajir County.">
-        <Button
-          onClick={() => {
-            setIsOpen(true);
-          }}
-          className="text-white  rounded font-sm"
-        >
-          New Ward &nbsp;<i className="fas fa-plus"></i>
-        </Button>
-      </CTA>
+      <PageTitle>Agents</PageTitle>
+      <CTA description="All Agents in Wajir County."></CTA>
 
-      <div className="flex justify-start flex-1 my-10"></div>
+      <div className="flex justify-start flex-1 lg:mr-32 mb-5">
+        <div className="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
+          <div className="absolute inset-y-0 flex items-center pl-2">
+            <SearchIcon className="w-4 h-4" aria-hidden="true" />
+          </div>
+          <Input
+            className="pl-8 text-gray-700"
+            placeholder="Search for Agents by Phone or ID Number"
+            aria-label="Search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+        <Button
+          className=" bg-blue-500"
+          onClick={(e) => {
+            getAgents(true);
+            console.log(query);
+          }}
+        >
+          Search
+        </Button>
+      </div>
       <div className="flex justify-start flex-1">
         {loading && (
           <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
@@ -146,38 +145,25 @@ function Wards() {
         <Table>
           <TableHeader>
             <tr>
-              <TableCell>Ward Code</TableCell>
-              <TableCell>Ward Name</TableCell>
-              <TableCell>Constituency</TableCell>
-              <TableCell>Action</TableCell>
+              <TableCell>Agents Names</TableCell>
+              <TableCell>ID Number</TableCell>
+              <TableCell>Phone Number</TableCell>
             </tr>
           </TableHeader>
           <TableBody>
             {data &&
-              data.map((ward, i) => (
+              data.map((agent, i) => (
                 <TableRow key={i}>
                   <TableCell>
-                    <Badge type="success" className="py-1 px-4">
-                      {ward.ward_code}
-                    </Badge>
+                    {agent.user.first_name.toUpperCase() +
+                      " " +
+                      agent.user.last_name.toUpperCase()}
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm">{ward.ward_name}</span>
+                    <span className="text-sm">{agent.id_number}</span>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm">{ward.constituency_name}</span>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      size="small"
-                      onClick={() => {
-                        console.log(ward);
-                        setWard(ward);
-                        setIsShow(true);
-                      }}
-                    >
-                      View
-                    </Button>
+                    <span className="text-sm">{agent.mobile_number}</span>
                   </TableCell>
                 </TableRow>
               ))}
@@ -198,4 +184,4 @@ function Wards() {
   );
 }
 
-export default Wards;
+export default Agents;
