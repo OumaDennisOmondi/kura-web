@@ -82,7 +82,7 @@ function RegistrationCentres() {
     setIsOpen(false);
     setIsShow(false);
   }
-  const getregistration_centres = async () => {
+  const getregistration_centres = async (denomination = false) => {
     let url = "";
     if (denomination) {
       url = BASE_URL + "/searchQ/reg_centre/?q=" + query;

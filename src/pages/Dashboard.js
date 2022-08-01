@@ -116,6 +116,47 @@ function Dashboard() {
           />
         </InfoCard>
       </div>
+      <div className="grid gap-6 mb-16 md:grid-cols-2 xl:grid-cols-5">
+        <InfoCard title="Total Votes Cast" value={stats.totals_votes}>
+          <RoundIcon
+            icon={"fas fa-vote-yea"}
+            iconColorClass="text-orange-500 dark:text-orange-100"
+            bgColorClass="bg-orange-100 dark:bg-orange-500"
+            className="mr-4"
+          />
+        </InfoCard>
+        <InfoCard title="Total Spoiled Votes" value={stats.spoiled_votes}>
+          <RoundIcon
+            icon={"fas fa-ban"}
+            iconColorClass="text-orange-500 dark:text-orange-100"
+            bgColorClass="bg-orange-100 dark:bg-orange-500"
+            className="mr-4"
+          />
+        </InfoCard>
+        <InfoCard
+          title="Transmiited P.Stations"
+          value={stats.total_transmision}
+        >
+          <RoundIcon
+            icon={"fas fa-map-marked"}
+            iconColorClass="text-blue-500 dark:text-orange-100"
+            bgColorClass="bg-blue-100 dark:bg-orange-500"
+            className="mr-4"
+          />
+        </InfoCard>
+
+        <InfoCard
+          title="Tansmission Percenatge"
+          value={((stats.total_transmision / 609) * 100).toFixed(2) + "%"}
+        >
+          <RoundIcon
+            icon={"fas fa-percent"}
+            iconColorClass="text-blue-500 dark:text-orange-100"
+            bgColorClass="bg-blue-100 dark:bg-orange-500"
+            className="mr-4"
+          />
+        </InfoCard>
+      </div>
       <div className="flex justify-start flex-col flex-1">
         {loading && (
           <>
@@ -125,19 +166,25 @@ function Dashboard() {
         )}
       </div>
       <PageTitle>Poll Graphs</PageTitle>
-      <div className="grid gap-6 mb-8 md:grid-cols-2">
+      <div className="grid gap-6 mb-8 md:grid-cols-1">
         <ChartCard title="Aspirants">
           <Doughnut
             {...doughnutOptions([
-              stats.aspirant_A,
-              stats.aspirant_B,
-              stats.aspirant_B,
+              stats.ahmed_ali_muktar,
+              stats.ahmed_abdullahi,
+              stats.abdullahi_ibrahim_ali,
+              stats.osman_warfa,
+              stats.siyat_abdullahi,
+              stats.ugas_sheikh_mohamed,
+              stats.mohamed_ibrahim_elmi,
+              stats.hassan_mohamed_adan,
+              stats.mohamed_abdi_mohamud,
             ])}
           />
           <ChartLegend legends={doughnutLegends} />
         </ChartCard>
 
-        <ChartCard title="Stats">
+        {/*<ChartCard title="Stats">
           <PageTitle>Current Transmission and Tally Stats</PageTitle>
           <SectionTitle>Total Votes Cast :{stats.totals_votes}</SectionTitle>
           <SectionTitle>
@@ -150,7 +197,7 @@ function Dashboard() {
             Tansmission Percenatge :{" "}
             {((stats.total_transmision / 609) * 100).toFixed(2)}%
           </SectionTitle>
-        </ChartCard>
+        </ChartCard>*/}
       </div>
 
       <PageTitle>Aspirants</PageTitle>

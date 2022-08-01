@@ -4,27 +4,13 @@ import { notify, makeRequest } from "../helpers";
 import { BASE_URL, AUTH_URL } from "../urls";
 import BarLoader from "../assets/img/bar-loader.svg";
 
-import InfoCard from "../components/Cards/InfoCard";
-import TargetCard from "../components/Cards/TargetCard";
+
 import CTA from "../components/CTA";
-import { Doughnut, Line } from "react-chartjs-2";
-import ChartLegend from "../components/Chart/ChartLegend";
-import GridCard from "../components/Chart/GridCard";
 import PageTitle from "../components/Typography/PageTitle";
 import SectionTitle from "../components/Typography/SectionTitle";
 import RoundIcon from "../components/RoundIcon";
 import response from "../utils/demo/targetsData";
-import {
-  SearchIcon,
-  MoonIcon,
-  SunIcon,
-  BellIcon,
-  MenuIcon,
-  OutlinePersonIcon,
-  OutlineCogIcon,
-  OutlineLogoutIcon,
-} from "../icons";
-import { male, female, ec2, eks, db, service, container } from "../assets/img";
+import { SearchIcon } from "../icons";
 //import AddConstituencyModal from "../components/Agents/AddConstituencyModal";
 //import ShowConstituencyModal from "../components/Agents/ShowConstituencyModal";
 import {
@@ -42,12 +28,7 @@ import {
   Pagination,
 } from "@windmill/react-ui";
 
-import {
-  doughnutOptions,
-  lineOptions,
-  doughnutLegends,
-  lineLegends,
-} from "../utils/demo/chartsData";
+
 
 function Agents() {
   const [page, setPage] = useState(1);

@@ -80,7 +80,7 @@ function PollingStations() {
     setIsOpen(false);
     setIsShow(false);
   }
-  const getpolling_stations = async () => {
+  const getpolling_stations = async (denomination = false) => {
     let url = "";
     if (denomination) {
       url = BASE_URL + "/searchQ/reg_centre/?q=" + query;
