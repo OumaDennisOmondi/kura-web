@@ -34,90 +34,54 @@ import {
   lineLegends,
 } from "../utils/demo/chartsData";
 
-function Dashboard() {
-  const [stats, setStats] = useState(false);
+function PollingStation(props) {
   const [loading, setLoading] = useState(false);
   // pagination setup
-
-  // paginatio
-  const getStats = async () => {
-    const url = BASE_URL + "/stats";
-    setLoading(true);
-    const res = await makeRequest(url);
-    console.log(res);
-    setLoading(false);
-    if (res.status === 200) {
-      const stats = res.data.data;
-
-      setStats(stats);
-      console.log("stats", stats);
-
-      //notifications
-      notify("Success", "Polls Refreshed", "success");
-    } else if (res.status !== 200) {
-      const err = res.response;
-      console.error(err);
-      //notifications
-      notify("Error", "Something went Wrong", "danger");
-    }
-  };
 
   // on page change, load new sliced data
   // here you would make another server request for new data
   useEffect(() => {
-    getStats();
+    const data = props.data;
+    console.log(props);
   }, []);
 
   return (
     <>
-      <PageTitle>Dashboard </PageTitle>
+      <PageTitle>
+        {props.station_data.polling_station_name} Polling Station{" "}
+      </PageTitle>
       {/* <CTA /> */}
 
       {/* <!-- Cards --> */}
-      <div className="grid gap-6 mb-16 md:grid-cols-2 xl:grid-cols-5">
-        <InfoCard title="Total Constituencies" value="6">
-          <RoundIcon
-            icon={"fas fa-globe"}
-            iconColorClass="text-orange-500 dark:text-orange-100"
-            bgColorClass="bg-orange-100 dark:bg-orange-500"
-            className="mr-4"
-          />
-        </InfoCard>
-        <InfoCard title="Total Wards" value="30">
-          <RoundIcon
-            icon={"fas fa-map"}
-            iconColorClass="text-orange-500 dark:text-orange-100"
-            bgColorClass="bg-orange-100 dark:bg-orange-500"
-            className="mr-4"
-          />
-        </InfoCard>
-        <InfoCard title="Total Registration Centres" value="513">
-          <RoundIcon
-            icon={"fas fa-map-marked"}
-            iconColorClass="text-blue-500 dark:text-orange-100"
-            bgColorClass="bg-blue-100 dark:bg-orange-500"
-            className="mr-4"
-          />
-        </InfoCard>
-        <InfoCard title="Total Polling Stations" value="609">
-          <RoundIcon
-            icon={"fas fa-map-marker-alt"}
-            iconColorClass="text-blue-500 dark:text-orange-100"
-            bgColorClass="bg-blue-100 dark:bg-orange-500"
-            className="mr-4"
-          />
-        </InfoCard>
-        <InfoCard title="Total Registered Voters" value="207758">
-          <RoundIcon
-            icon={"fas fa-map-marker-alt"}
-            iconColorClass="text-blue-500 dark:text-orange-100"
-            bgColorClass="bg-blue-100 dark:bg-orange-500"
-            className="mr-4"
-          />
-        </InfoCard>
+
+      <div className="grid gap-6 mb-16 md:grid-cols-2 xl:grid-cols-6">
+        <Button
+          size="small"
+          className="mr-1"
+          onClick={() => {
+            props.close();
+          }}
+        >
+          Back
+        </Button>
       </div>
+
       <div className="grid gap-6 mb-16 md:grid-cols-2 xl:grid-cols-5">
-        <InfoCard title="Total Votes Cast" value={stats.totals_votes}>
+        <InfoCard
+          title="Total Registered Voters"
+          value={props.station_data.registered_voters}
+        >
+          <RoundIcon
+            icon={"fas fa-map-marker-alt"}
+            iconColorClass="text-blue-500 dark:text-orange-100"
+            bgColorClass="bg-blue-100 dark:bg-orange-500"
+            className="mr-4"
+          />
+        </InfoCard>
+        <InfoCard
+          title="Total Votes Cast"
+          value={props.station_data.total_votes}
+        >
           <RoundIcon
             icon={"fas fa-vote-yea"}
             iconColorClass="text-orange-500 dark:text-orange-100"
@@ -125,34 +89,14 @@ function Dashboard() {
             className="mr-4"
           />
         </InfoCard>
-        <InfoCard title="Total Spoiled Votes" value={stats.spoiled_votes}>
+        <InfoCard
+          title="Total Spoiled Votes"
+          value={props.station_data.spoiled_votes}
+        >
           <RoundIcon
             icon={"fas fa-ban"}
             iconColorClass="text-orange-500 dark:text-orange-100"
             bgColorClass="bg-orange-100 dark:bg-orange-500"
-            className="mr-4"
-          />
-        </InfoCard>
-        <InfoCard
-          title="Transmiited P.Stations"
-          value={stats.total_transmision}
-        >
-          <RoundIcon
-            icon={"fas fa-map-marked"}
-            iconColorClass="text-blue-500 dark:text-orange-100"
-            bgColorClass="bg-blue-100 dark:bg-orange-500"
-            className="mr-4"
-          />
-        </InfoCard>
-
-        <InfoCard
-          title="Tansmission Percenatge"
-          value={((stats.total_transmision / 609) * 100).toFixed(2) + "%"}
-        >
-          <RoundIcon
-            icon={"fas fa-percent"}
-            iconColorClass="text-blue-500 dark:text-orange-100"
-            bgColorClass="bg-blue-100 dark:bg-orange-500"
             className="mr-4"
           />
         </InfoCard>
@@ -170,34 +114,19 @@ function Dashboard() {
         <ChartCard title="Aspirants">
           <Doughnut
             {...doughnutOptions([
-              stats.ahmed_ali_muktar,
-              stats.ahmed_abdullahi,
-              stats.abdullahi_ibrahim_ali,
-              stats.osman_warfa,
-              stats.siyat_abdullahi,
-              stats.ugas_sheikh_mohamed,
-              stats.mohamed_ibrahim_elmi,
-              stats.hassan_mohamed_adan,
-              stats.mohamed_abdi_mohamud,
+              props.station_data.ahmed_ali_muktar,
+              props.station_data.ahmed_abdullahi,
+              props.station_data.abdullahi_ibrahim_ali,
+              props.station_data.osman_warfa,
+              props.station_data.siyat_abdullahi,
+              props.station_data.ugas_sheikh_mohamed,
+              props.station_data.mohamed_ibrahim_elmi,
+              props.station_data.hassan_mohamed_adan,
+              props.station_data.mohamed_abdi_mohamud,
             ])}
           />
           <ChartLegend legends={doughnutLegends} />
         </ChartCard>
-
-        {/*<ChartCard title="Stats">
-          <PageTitle>Current Transmission and Tally Stats</PageTitle>
-          <SectionTitle>Total Votes Cast :{stats.totals_votes}</SectionTitle>
-          <SectionTitle>
-            Total Spoiled Votes : {stats.spoiled_votes}
-          </SectionTitle>
-          <SectionTitle>
-            Tallying {stats.total_transmision} of 609 Polling Stations
-          </SectionTitle>
-          <SectionTitle>
-            Tansmission Percenatge :{" "}
-            {((stats.total_transmision / 609) * 100).toFixed(2)}%
-          </SectionTitle>
-        </ChartCard>*/}
       </div>
 
       <PageTitle>Aspirants</PageTitle>
@@ -215,30 +144,35 @@ function Dashboard() {
             <TableRow>
               <TableCell>H.E Ahmed Ali Muktar </TableCell>
               <TableCell>UDA</TableCell>
-              <TableCell>{stats.ahmed_ali_muktar}</TableCell>
+              <TableCell>{props.station_data.ahmed_ali_muktar}</TableCell>
               <TableCell>
-                {((stats.ahmed_ali_muktar / stats.totals_votes) * 100).toFixed(
-                  2
-                )}
+                {(
+                  (props.station_data.ahmed_ali_muktar /
+                    props.station_data.total_votes) *
+                  100
+                ).toFixed(2)}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Mr Ahmed Abdullahi </TableCell>
               <TableCell>ODM</TableCell>
-              <TableCell>{stats.ahmed_abdullahi}</TableCell>
+              <TableCell>{props.station_data.ahmed_abdullahi}</TableCell>
               <TableCell>
-                {((stats.ahmed_abdullahi / stats.totals_votes) * 100).toFixed(
-                  2
-                )}
+                {(
+                  (props.station_data.ahmed_abdullahi /
+                    props.station_data.total_votes) *
+                  100
+                ).toFixed(2)}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Dr Abdullahi Ibrahim Ali</TableCell>
               <TableCell>UDM</TableCell>
-              <TableCell>{stats.abdullahi_ibrahim_ali}</TableCell>
+              <TableCell>{props.station_data.abdullahi_ibrahim_ali}</TableCell>
               <TableCell>
                 {(
-                  (stats.abdullahi_ibrahim_ali / stats.totals_votes) *
+                  (props.station_data.abdullahi_ibrahim_ali /
+                    props.station_data.total_votes) *
                   100
                 ).toFixed(2)}
               </TableCell>
@@ -246,28 +180,35 @@ function Dashboard() {
             <TableRow>
               <TableCell>Prof Osman Warfa </TableCell>
               <TableCell>NARK</TableCell>
-              <TableCell>{stats.osman_warfa}</TableCell>
+              <TableCell>{props.station_data.osman_warfa}</TableCell>
               <TableCell>
-                {((stats.osman_warfa / stats.totals_votes) * 100).toFixed(2)}
+                {(
+                  (props.station_data.osman_warfa /
+                    props.station_data.total_votes) *
+                  100
+                ).toFixed(2)}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Dr Siyat Abdullahi </TableCell>
               <TableCell>WIPER</TableCell>
-              <TableCell>{stats.siyat_abdullahi}</TableCell>
+              <TableCell>{props.station_data.siyat_abdullahi}</TableCell>
               <TableCell>
-                {((stats.siyat_abdullahi / stats.totals_votes) * 100).toFixed(
-                  2
-                )}
+                {(
+                  (props.station_data.siyat_abdullahi /
+                    props.station_data.total_votes) *
+                  100
+                ).toFixed(2)}
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Mr Ugas Sheikh Mohamed</TableCell>
               <TableCell>ANC</TableCell>
-              <TableCell>{stats.ugas_sheikh_mohamed}</TableCell>
+              <TableCell>{props.station_data.ugas_sheikh_mohamed}</TableCell>
               <TableCell>
                 {(
-                  (stats.ugas_sheikh_mohamed / stats.totals_votes) *
+                  (props.station_data.ugas_sheikh_mohamed /
+                    props.station_data.total_votes) *
                   100
                 ).toFixed(2)}
               </TableCell>
@@ -275,10 +216,11 @@ function Dashboard() {
             <TableRow>
               <TableCell>Mr Mohamed Ibrahim Elmi </TableCell>
               <TableCell>INDEPENDENT</TableCell>
-              <TableCell>{stats.mohamed_ibrahim_elmi}</TableCell>
+              <TableCell>{props.station_data.mohamed_ibrahim_elmi}</TableCell>
               <TableCell>
                 {(
-                  (stats.mohamed_ibrahim_elmi / stats.totals_votes) *
+                  (props.station_data.mohamed_ibrahim_elmi /
+                    props.station_data.total_votes) *
                   100
                 ).toFixed(2)}
               </TableCell>
@@ -287,10 +229,11 @@ function Dashboard() {
             <TableRow>
               <TableCell>Dr Hassan Mohamed Adan</TableCell>
               <TableCell>JUBILEE</TableCell>
-              <TableCell>{stats.hassan_mohamed_adan}</TableCell>
+              <TableCell>{props.station_data.hassan_mohamed_adan}</TableCell>
               <TableCell>
                 {(
-                  (stats.hassan_mohamed_adan / stats.totals_votes) *
+                  (props.station_data.hassan_mohamed_adan /
+                    props.station_data.total_votes) *
                   100
                 ).toFixed(2)}
               </TableCell>
@@ -298,10 +241,11 @@ function Dashboard() {
             <TableRow>
               <TableCell>Mr Mohamed Abdi Mohamud </TableCell>
               <TableCell>INDEPENDENT</TableCell>
-              <TableCell>{stats.mohamed_abdi_mohamud}</TableCell>
+              <TableCell>{props.station_data.mohamed_abdi_mohamud}</TableCell>
               <TableCell>
                 {(
-                  (stats.mohamed_abdi_mohamud / stats.totals_votes) *
+                  (props.station_data.mohamed_abdi_mohamud /
+                    props.station_data.total_votes) *
                   100
                 ).toFixed(2)}
               </TableCell>
@@ -313,4 +257,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default PollingStation;

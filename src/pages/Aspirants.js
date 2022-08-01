@@ -1,32 +1,19 @@
-import React, { useState, useEffect, useMemo } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { notify, makeRequest } from "../helpers";
 import { BASE_URL, AUTH_URL } from "../urls";
 import BarLoader from "../assets/img/bar-loader.svg";
-
 import InfoCard from "../components/Cards/InfoCard";
 import TargetCard from "../components/Cards/TargetCard";
-import CTA from "../components/CTA";
+import ChartCard from "../components/Chart/ChartCard";
 import { Doughnut, Line } from "react-chartjs-2";
 import ChartLegend from "../components/Chart/ChartLegend";
 import GridCard from "../components/Chart/GridCard";
 import PageTitle from "../components/Typography/PageTitle";
 import SectionTitle from "../components/Typography/SectionTitle";
 import RoundIcon from "../components/RoundIcon";
-import response from "../utils/demo/targetsData";
-import {
-  SearchIcon,
-  MoonIcon,
-  SunIcon,
-  BellIcon,
-  MenuIcon,
-  OutlinePersonIcon,
-  OutlineCogIcon,
-  OutlineLogoutIcon,
-} from "../icons";
+import response from "../utils/demo/tableData";
+
 import { male, female, ec2, eks, db, service, container } from "../assets/img";
-//import AddConstituencyModal from "../components/Aspirants/AddConstituencyModal";
-//import ShowConstituencyModal from "../components/Aspirants/ShowConstituencyModal";
 import {
   TableBody,
   TableContainer,
@@ -36,8 +23,6 @@ import {
   TableRow,
   TableFooter,
   Button,
-  Card,
-  Input,
   Badge,
   Pagination,
 } from "@windmill/react-ui";
@@ -50,48 +35,25 @@ import {
 } from "../utils/demo/chartsData";
 
 function Aspirants() {
-  const [page, setPage] = useState(1);
-  const [data, setData] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isShow, setIsShow] = useState(false);
-  const [aspirant, setAspirant] = useState({});
-  const [aspirants, setAspirants] = useState([]);
-  const [totalResults, setTotalResults] = useState(0);
+  const [stats, setStats] = useState(false);
   const [loading, setLoading] = useState(false);
-
   // pagination setup
-  const resultsPerPage = 10;
-  const targets_data = React.useMemo(() => aspirants, [aspirants]);
-  // pagination change control
-  function onPageChange(p) {
-    setPage(p);
-    console.log("page" + p);
-    setData(
-      targets_data.slice((p - 1) * resultsPerPage, page * resultsPerPage)
-    );
-    console.log(data.length);
-  }
-  function closeModal() {
-    setIsOpen(false);
-    setIsShow(false);
-  }
-  const getAspirants = async () => {
-    const url = BASE_URL + "/aspirant/";
+
+  // paginatio
+  const getStats = async () => {
+    const url = BASE_URL + "/stats";
     setLoading(true);
     const res = await makeRequest(url);
     console.log(res);
     setLoading(false);
     if (res.status === 200) {
-      const aspirants = res.data.data;
-      setTotalResults(aspirants.length);
+      const stats = res.data.data;
 
-      setAspirants(aspirants);
-      //set 1st 10 records for initial render
-      setData(
-        aspirants.slice((page - 1) * resultsPerPage, page * resultsPerPage)
-      );
+      setStats(stats);
+      console.log("stats", stats);
+
       //notifications
-      notify("Success", "Aspirants fetched", "success");
+      notify("Success", "Polls Refreshed", "success");
     } else if (res.status !== 200) {
       const err = res.response;
       console.error(err);
@@ -103,36 +65,12 @@ function Aspirants() {
   // on page change, load new sliced data
   // here you would make another server request for new data
   useEffect(() => {
-    //get aspirants
-    //setData(aspirants.slice((page - 1) * resultsPerPage, page * resultsPerPage));
-    getAspirants();
+    getStats();
   }, []);
 
   return (
     <>
-      {/*<AddConstituencyModal
-        isOpen={isOpen}
-        onClose={closeModal}
-        refresh={getAspirants}
-      />
-      {aspirant && (
-        <ShowConstituencyModal
-          isOpen={isShow}
-          onClose={closeModal}
-          aspirant={aspirant}
-          refresh={getAspirants}
-        />
-      )}*/}
-      <PageTitle>Aspirants</PageTitle>
-      <CTA description="All Aspirants in Wajir County."></CTA>
-
-      <div className="flex justify-start flex-1 my-10"></div>
-      <div className="flex justify-start flex-1">
-        {loading && (
-          <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
-        )}
-      </div>
-
+      <PageTitle>Aspirants (9) </PageTitle>
       <TableContainer>
         <Table>
           <TableHeader>
@@ -140,53 +78,140 @@ function Aspirants() {
               <TableCell>Aspirant Names</TableCell>
               <TableCell>Political Party</TableCell>
               <TableCell>Total Votes</TableCell>
-              <TableCell>Action</TableCell>
+              <TableCell>% Votes</TableCell>
             </tr>
           </TableHeader>
           <TableBody>
-            {data &&
-              data.map((aspirant, i) => (
-                <TableRow key={i}>
-                  <TableCell>
-                    {aspirant.first_name + " " + aspirant.last_name}
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{aspirant.political_party}</span>
-                  </TableCell>
+            <TableRow>
+              <TableCell>H.E Ahmed Ali Muktar </TableCell>
+              <TableCell>UDA</TableCell>
+              <TableCell>{stats.ahmed_ali_muktar}</TableCell>
+              <TableCell>
+                {((stats.ahmed_ali_muktar / stats.totals_votes) * 100).toFixed(
+                  2
+                )}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Mr Ahmed Abdullahi </TableCell>
+              <TableCell>ODM</TableCell>
+              <TableCell>{stats.ahmed_abdullahi}</TableCell>
+              <TableCell>
+                {((stats.ahmed_abdullahi / stats.totals_votes) * 100).toFixed(
+                  2
+                )}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Dr Abdullahi Ibrahim Ali</TableCell>
+              <TableCell>UDM</TableCell>
+              <TableCell>{stats.abdullahi_ibrahim_ali}</TableCell>
+              <TableCell>
+                {(
+                  (stats.abdullahi_ibrahim_ali / stats.totals_votes) *
+                  100
+                ).toFixed(2)}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Prof Osman Warfa </TableCell>
+              <TableCell>NARK</TableCell>
+              <TableCell>{stats.osman_warfa}</TableCell>
+              <TableCell>
+                {((stats.osman_warfa / stats.totals_votes) * 100).toFixed(2)}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Dr Siyat Abdullahi </TableCell>
+              <TableCell>WIPER</TableCell>
+              <TableCell>{stats.siyat_abdullahi}</TableCell>
+              <TableCell>
+                {((stats.siyat_abdullahi / stats.totals_votes) * 100).toFixed(
+                  2
+                )}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Mr Ugas Sheikh Mohamed</TableCell>
+              <TableCell>ANC</TableCell>
+              <TableCell>{stats.ugas_sheikh_mohamed}</TableCell>
+              <TableCell>
+                {(
+                  (stats.ugas_sheikh_mohamed / stats.totals_votes) *
+                  100
+                ).toFixed(2)}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Mr Mohamed Ibrahim Elmi </TableCell>
+              <TableCell>INDEPENDENT</TableCell>
+              <TableCell>{stats.mohamed_ibrahim_elmi}</TableCell>
+              <TableCell>
+                {(
+                  (stats.mohamed_ibrahim_elmi / stats.totals_votes) *
+                  100
+                ).toFixed(2)}
+              </TableCell>
+            </TableRow>
 
-                  <TableCell>
-                    <Badge type="success" className="py-1 px-4">
-                      {0}
-                    </Badge>
-                  </TableCell>
-
-                  <TableCell>
-                    <Button
-                      size="small"
-                      onClick={() => {
-                        console.log(aspirant);
-                        setAspirant(aspirant);
-                        setIsShow(true);
-                      }}
-                    >
-                      View
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+            <TableRow>
+              <TableCell>Dr Hassan Mohamed Adan</TableCell>
+              <TableCell>JUBILEE</TableCell>
+              <TableCell>{stats.hassan_mohamed_adan}</TableCell>
+              <TableCell>
+                {(
+                  (stats.hassan_mohamed_adan / stats.totals_votes) *
+                  100
+                ).toFixed(2)}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Mr Mohamed Abdi Mohamud </TableCell>
+              <TableCell>INDEPENDENT</TableCell>
+              <TableCell>{stats.mohamed_abdi_mohamud}</TableCell>
+              <TableCell>
+                {(
+                  (stats.mohamed_abdi_mohamud / stats.totals_votes) *
+                  100
+                ).toFixed(2)}
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-        <TableFooter>
-          {totalResults && (
-            <Pagination
-              totalResults={totalResults}
-              resultsPerPage={resultsPerPage}
-              label="Table navigation"
-              onChange={onPageChange}
-            />
-          )}
-        </TableFooter>
       </TableContainer>
+      <div className="grid gap-6 mt-5 mb-8 md:grid-cols-1">
+        <ChartCard title="Aspirants">
+          <Doughnut
+            {...doughnutOptions([
+              stats.ahmed_ali_muktar,
+              stats.ahmed_abdullahi,
+              stats.abdullahi_ibrahim_ali,
+              stats.osman_warfa,
+              stats.siyat_abdullahi,
+              stats.ugas_sheikh_mohamed,
+              stats.mohamed_ibrahim_elmi,
+              stats.hassan_mohamed_adan,
+              stats.mohamed_abdi_mohamud,
+            ])}
+          />
+          <ChartLegend legends={doughnutLegends} />
+        </ChartCard>
+
+        {/*<ChartCard title="Stats">
+          <PageTitle>Current Transmission and Tally Stats</PageTitle>
+          <SectionTitle>Total Votes Cast :{stats.totals_votes}</SectionTitle>
+          <SectionTitle>
+            Total Spoiled Votes : {stats.spoiled_votes}
+          </SectionTitle>
+          <SectionTitle>
+            Tallying {stats.total_transmision} of 609 Polling Stations
+          </SectionTitle>
+          <SectionTitle>
+            Tansmission Percenatge :{" "}
+            {((stats.total_transmision / 609) * 100).toFixed(2)}%
+          </SectionTitle>
+        </ChartCard>*/}
+      </div>
     </>
   );
 }

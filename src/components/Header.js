@@ -77,9 +77,7 @@ function Header() {
         >
           <MenuIcon className="w-6 h-6 text-blue-500" aria-hidden="true" />
         </button>
-        <h1
-          className="ml-6 text-md font-bold text-gray-800 dark:text-gray-200"
-         >
+        <h1 className="ml-6 text-md font-bold text-gray-800 dark:text-gray-200">
           Wajir 2022
         </h1>
         <div className="flex items-center justify-end align-center">
@@ -121,7 +119,7 @@ function Header() {
               ></span>
             </button>
 
-            <Dropdown
+            {/*<Dropdown
               align="right"
               isOpen={isNotificationsMenuOpen}
               onClose={() => setIsNotificationsMenuOpen(false)}
@@ -138,7 +136,7 @@ function Header() {
                 <span>Failed</span>
                 <Badge type="danger">5</Badge>
               </DropdownItem>
-            </Dropdown>
+            </Dropdown>*/}
           </li>
           {/* <!-- Profile menu --> */}
           <li className="relative">
@@ -167,12 +165,6 @@ function Header() {
                   {/*{timeofDay}, {user.user.username.split("@")[0]}*/}
                 </span>
                 <hr />
-              </DropdownItem>
-              <DropdownItem>
-                <i className="fas fa-tools mr-1 text-gray-400"></i>
-                <Link to="/app/aws-configs">
-                  <span>AWS Configs</span>
-                </Link>
               </DropdownItem>
 
               <DropdownItem onClick={() => logout()}>

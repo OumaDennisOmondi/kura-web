@@ -14,8 +14,7 @@ import ChartLegend from "../components/Chart/ChartLegend";
 import GridCard from "../components/Chart/GridCard";
 import PageTitle from "../components/Typography/PageTitle";
 import SectionTitle from "../components/Typography/SectionTitle";
-import RoundIcon from "../components/RoundIcon";
-import response from "../utils/demo/targetsData";
+import Ward from "./Ward";
 import {
   SearchIcon,
   MoonIcon,
@@ -54,8 +53,8 @@ function Wards(props) {
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isShow, setIsShow] = useState(false);
-  const [ward, setWard] = useState({});
+  const [showCaw, setShowCaw] = useState(false);
+  const [caw_data, setCawData] = useState({});
   const [wards, setWards] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -75,8 +74,7 @@ function Wards(props) {
     console.log(data.length);
   }
   function closeModal() {
-    setIsOpen(false);
-    setIsShow(false);
+    setShowCaw(false);
   }
   const getWards = async (denomination = false) => {
     let url = "";
@@ -134,134 +132,146 @@ function Wards(props) {
 
   return (
     <>
-      <PageTitle>Wards</PageTitle>
-      <CTA description={"Wards in " + denomination}></CTA>
+      {showCaw ? (
+        <Ward caw_data={caw_data} close={closeModal} />
+      ) : (
+        <>
+          <PageTitle>Wards</PageTitle>
+          <CTA description={"Wards in " + denomination}></CTA>
 
-      <div className="flex justify-start flex-1 my-10">
-        <SectionTitle>
-          <SectionTitle>Currently Showing Wards in {denomination}</SectionTitle>
-        </SectionTitle>
-      </div>
-      <div className="flex justify-start flex-1 lg:mr-32 mb-5">
-        <div className="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
-          <div className="absolute inset-y-0 flex items-center pl-2">
-            <SearchIcon className="w-4 h-4" aria-hidden="true" />
+          <div className="flex justify-start flex-1 my-10">
+            <SectionTitle>
+              <SectionTitle>
+                Currently Showing Wards in {denomination}
+              </SectionTitle>
+            </SectionTitle>
           </div>
-          <Input
-            className="pl-8 text-gray-700"
-            placeholder="Search for Wards by Code or Name"
-            aria-label="Search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
-        <Button
-          className=" bg-blue-500"
-          onClick={(e) => {
-            getWards(true);
-            console.log(query);
-          }}
-        >
-          Search
-        </Button>
-      </div>
-      <div className="flex justify-start flex-1">
-        {loading && (
-          <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
-        )}
-      </div>
+          <div className="flex justify-start flex-1 lg:mr-32 mb-5">
+            <div className="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
+              <div className="absolute inset-y-0 flex items-center pl-2">
+                <SearchIcon className="w-4 h-4" aria-hidden="true" />
+              </div>
+              <Input
+                className="pl-8 text-gray-700"
+                placeholder="Search for Wards by Code or Name"
+                aria-label="Search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+            <Button
+              className=" bg-blue-500"
+              onClick={(e) => {
+                getWards(true);
+                console.log(query);
+              }}
+            >
+              Search
+            </Button>
+          </div>
+          <div className="flex justify-start flex-1">
+            {loading && (
+              <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
+            )}
+          </div>
 
-      <TableContainer>
-        <Table>
-          <TableHeader>
-            <tr>
-              <TableCell>Code</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Registered Voters</TableCell>
-              <TableCell>Aspirant A</TableCell>
-              <TableCell>Aspirant B</TableCell>
-              <TableCell>Spoiled Votes</TableCell>
-              <TableCell>Total Votes</TableCell>
-              <TableCell>Action</TableCell>
-            </tr>
-          </TableHeader>
-          <TableBody>
-            {data &&
-              data.map((ward, i) => (
-                <TableRow key={i}>
-                  <TableCell>
-                    <Badge type="success" className="py-1 px-4">
-                      {ward.caw_code}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{ward.caw_name}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{ward.registered_voters}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{ward.aspirant_A}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{ward.aspirant_B}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{ward.spoiled_votes}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{ward.total_votes}</span>
-                  </TableCell>
+          <TableContainer>
+            <Table>
+              <TableHeader>
+                <tr>
+                  <TableCell>Code</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Registered Voters</TableCell>
+                  <TableCell>Spoiled Votes</TableCell>
+                  <TableCell>Total Votes</TableCell>
+                  <TableCell>Action</TableCell>
+                </tr>
+              </TableHeader>
+              <TableBody>
+                {data &&
+                  data.map((ward, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <Badge type="success" className="py-1 px-4">
+                          {ward.caw_code}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">{ward.caw_name}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">
+                          {ward.registered_voters}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">{ward.spoiled_votes}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">{ward.total_votes}</span>
+                      </TableCell>
 
-                  <TableCell>
-                    <Link
-                      to={
-                        "/app/registration-centres?criteria=by-caw&caw_code=" +
-                        ward.caw_code +
-                        "&caw_name=" +
-                        ward.caw_name +
-                        "&const_code=" +
-                        ward.const_code +
-                        "&const_name=" +
-                        ward.const_name
-                      }
-                    >
-                      <Button size="small" className="mr-1">
-                        Reg.Centres
-                      </Button>
-                    </Link>
-                    <Link
-                      to={
-                        "/app/polling-stations?criteria=by-caw&caw_code=" +
-                        ward.caw_code +
-                        "&caw_name=" +
-                        ward.caw_name +
-                        "&const_code=" +
-                        ward.const_code +
-                        "&const_name=" +
-                        ward.const_name
-                      }
-                    >
-                      <Button size="small" className="mr-1">
-                        P.Stations
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-        <TableFooter>
-          {totalResults && (
-            <Pagination
-              totalResults={totalResults}
-              resultsPerPage={resultsPerPage}
-              label="Table navigation"
-              onChange={onPageChange}
-            />
-          )}
-        </TableFooter>
-      </TableContainer>
+                      <TableCell>
+                        <Button
+                          size="small"
+                          className="mr-1"
+                          onClick={() => {
+                            setCawData(ward);
+                            setShowCaw(true);
+                          }}
+                        >
+                          Results
+                        </Button>
+                        <Link
+                          to={
+                            "/app/registration-centres?criteria=by-caw&caw_code=" +
+                            ward.caw_code +
+                            "&caw_name=" +
+                            ward.caw_name +
+                            "&const_code=" +
+                            ward.const_code +
+                            "&const_name=" +
+                            ward.const_name
+                          }
+                        >
+                          <Button size="small" className="mr-1">
+                            Reg.Centres
+                          </Button>
+                        </Link>
+                        <Link
+                          to={
+                            "/app/polling-stations?criteria=by-caw&caw_code=" +
+                            ward.caw_code +
+                            "&caw_name=" +
+                            ward.caw_name +
+                            "&const_code=" +
+                            ward.const_code +
+                            "&const_name=" +
+                            ward.const_name
+                          }
+                        >
+                          <Button size="small" className="mr-1">
+                            P.Stations
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+            <TableFooter>
+              {totalResults && (
+                <Pagination
+                  totalResults={totalResults}
+                  resultsPerPage={resultsPerPage}
+                  label="Table navigation"
+                  onChange={onPageChange}
+                />
+              )}
+            </TableFooter>
+          </TableContainer>
+        </>
+      )}
     </>
   );
 }

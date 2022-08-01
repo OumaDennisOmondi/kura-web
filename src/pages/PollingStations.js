@@ -12,8 +12,7 @@ import ChartLegend from "../components/Chart/ChartLegend";
 import GridCard from "../components/Chart/GridCard";
 import PageTitle from "../components/Typography/PageTitle";
 import SectionTitle from "../components/Typography/SectionTitle";
-import RoundIcon from "../components/RoundIcon";
-import response from "../utils/demo/targetsData";
+import PollingStation from "./PollingStation";
 import {
   SearchIcon,
   MoonIcon,
@@ -52,8 +51,8 @@ function PollingStations() {
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isShow, setIsShow] = useState(false);
-  const [polling_station, setPolling_station] = useState({});
+  const [station_data, setStationData] = useState({});
+  const [showStation, setShowStation] = useState(false);
   const [polling_stations, setPolling_stations] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -77,8 +76,7 @@ function PollingStations() {
     console.log(data.length);
   }
   function closeModal() {
-    setIsOpen(false);
-    setIsShow(false);
+    setShowStation(false);
   }
   const getpolling_stations = async (denomination = false) => {
     let url = "";
@@ -172,115 +170,114 @@ function PollingStations() {
 
   return (
     <>
-      <PageTitle>Polling Stations</PageTitle>
-      <CTA description={"Polling Stations in " + denomination}></CTA>
+      {showStation ? (
+        <PollingStation station_data={station_data} close={closeModal} />
+      ) : (
+        <>
+          <PageTitle>Polling Stations</PageTitle>
+          <CTA description={"Polling Stations in " + denomination}></CTA>
 
-      <div className="flex justify-start flex-1 my-10">
-        <SectionTitle>Polling Stations in {denomination}</SectionTitle>
-      </div>
-      <div className="flex justify-start flex-1 lg:mr-32 mb-5">
-        <div className="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
-          <div className="absolute inset-y-0 flex items-center pl-2">
-            <SearchIcon className="w-4 h-4" aria-hidden="true" />
+          <div className="flex justify-start flex-1 my-10">
+            <SectionTitle>Polling Stations in {denomination}</SectionTitle>
           </div>
-          <Input
-            className="pl-8 text-gray-700"
-            placeholder="Search for Polling Stations by Code or Name"
-            aria-label="Search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
-        <Button
-          className=" bg-blue-500"
-          onClick={() => getpolling_stations(true)}
-        >
-          Search
-        </Button>
-      </div>
-      <div className="flex justify-start flex-1">
-        {loading && (
-          <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
-        )}
-      </div>
+          <div className="flex justify-start flex-1 lg:mr-32 mb-5">
+            <div className="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
+              <div className="absolute inset-y-0 flex items-center pl-2">
+                <SearchIcon className="w-4 h-4" aria-hidden="true" />
+              </div>
+              <Input
+                className="pl-8 text-gray-700"
+                placeholder="Search for Polling Stations by Code or Name"
+                aria-label="Search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+            <Button
+              className=" bg-blue-500"
+              onClick={() => getpolling_stations(true)}
+            >
+              Search
+            </Button>
+          </div>
+          <div className="flex justify-start flex-1">
+            {loading && (
+              <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
+            )}
+          </div>
 
-      <TableContainer>
-        <Table>
-          <TableHeader>
-            <tr>
-              <TableCell>Code</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Registered Voters</TableCell>
-              <TableCell>Aspirant A</TableCell>
-              <TableCell>Aspirant B</TableCell>
-              <TableCell>Spoiled Votes</TableCell>
-              <TableCell>Total Votes</TableCell>
-              <TableCell>Action</TableCell>
-            </tr>
-          </TableHeader>
-          <TableBody>
-            {data &&
-              data.map((polling_staion, i) => (
-                <TableRow key={i}>
-                  <TableCell>
-                    <Badge type="success" className="py-1 px-4">
-                      {polling_staion.polling_station_code}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {polling_staion.polling_station_name}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {polling_staion.registered_voters}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{polling_staion.aspirant_A}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{polling_staion.aspirant_B}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {polling_staion.spoiled_votes}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {polling_staion.total_votes}
-                    </span>
-                  </TableCell>
+          <TableContainer>
+            <Table>
+              <TableHeader>
+                <tr>
+                  <TableCell>Code</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Registered Voters</TableCell>
+                  <TableCell>Spoiled Votes</TableCell>
+                  <TableCell>Total Votes</TableCell>
+                  <TableCell>Action</TableCell>
+                </tr>
+              </TableHeader>
+              <TableBody>
+                {data &&
+                  data.map((polling_station, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <Badge type="success" className="py-1 px-4">
+                          {polling_station.polling_station_code}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">
+                          {polling_station.polling_station_name}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">
+                          {polling_station.registered_voters}
+                        </span>
+                      </TableCell>
 
-                  <TableCell>
-                    <Button
-                      size="small"
-                      onClick={() => {
-                        console.log(polling_staion);
-                        setPolling_station(polling_staion);
-                        setIsShow(true);
-                      }}
-                    >
-                      View
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-        <TableFooter>
-          {totalResults && (
-            <Pagination
-              totalResults={totalResults}
-              resultsPerPage={resultsPerPage}
-              label="Table navigation"
-              onChange={onPageChange}
-            />
-          )}
-        </TableFooter>
-      </TableContainer>
+                      <TableCell>
+                        <span className="text-sm">
+                          {polling_station.spoiled_votes}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">
+                          {polling_station.total_votes}
+                        </span>
+                      </TableCell>
+
+                      <TableCell>
+                        <Button
+                          size="small"
+                          className="mr-1"
+                          onClick={() => {
+                            setStationData(polling_station);
+                            setShowStation(true);
+                          }}
+                        >
+                          Results
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+            <TableFooter>
+              {totalResults && (
+                <Pagination
+                  totalResults={totalResults}
+                  resultsPerPage={resultsPerPage}
+                  label="Table navigation"
+                  onChange={onPageChange}
+                />
+              )}
+            </TableFooter>
+          </TableContainer>
+        </>
+      )}
     </>
   );
 }

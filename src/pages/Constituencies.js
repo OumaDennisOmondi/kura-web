@@ -12,9 +12,7 @@ import { Doughnut, Line } from "react-chartjs-2";
 import ChartLegend from "../components/Chart/ChartLegend";
 import GridCard from "../components/Chart/GridCard";
 import PageTitle from "../components/Typography/PageTitle";
-import SectionTitle from "../components/Typography/SectionTitle";
-import RoundIcon from "../components/RoundIcon";
-import response from "../utils/demo/targetsData";
+import Constituency from "./Constituency";
 import {
   SearchIcon,
   MoonIcon,
@@ -53,8 +51,8 @@ function Constituencies() {
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isShow, setIsShow] = useState(false);
-  const [constituency, setConstituency] = useState({});
+  const [showConst, setShowConst] = useState(false);
+  const [const_data, setConstData] = useState({});
   const [constituencies, setConstituencies] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -71,10 +69,11 @@ function Constituencies() {
     );
     console.log(data.length);
   }
+
   function closeModal() {
-    setIsOpen(false);
-    setIsShow(false);
+    setShowConst(false);
   }
+
   const getConstituencies = async () => {
     const url = BASE_URL + "/constituencies";
     setLoading(true);
@@ -110,115 +109,130 @@ function Constituencies() {
 
   return (
     <>
-      <PageTitle>Constituencies</PageTitle>
-      <CTA description="6 Constituencies in Wajir County."></CTA>
+      {showConst ? (
+        <Constituency const_data={const_data} close={closeModal} />
+      ) : (
+        <>
+          <PageTitle>Constituency</PageTitle>
 
-      <div className="flex justify-start flex-1 my-10"></div>
-      <div className="flex justify-start flex-1">
-        {loading && (
-          <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
-        )}
-      </div>
+          <CTA description="6 Constituencies in Wajir County."></CTA>
 
-      <TableContainer>
-        <Table>
-          <TableHeader>
-            <tr>
-              <TableCell>Code</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Registered Voters</TableCell>
-              <TableCell>Aspirant A</TableCell>
-              <TableCell>Aspirant B</TableCell>
-              <TableCell>Spoiled Votes</TableCell>
-              <TableCell>Total Votes</TableCell>
-              <TableCell>Action</TableCell>
-            </tr>
-          </TableHeader>
-          <TableBody>
-            {data &&
-              data.map((constituency, i) => (
-                <TableRow key={i}>
-                  <TableCell>
-                    <Badge type="success" className="py-1 px-4">
-                      {constituency.const_code}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{constituency.const_name}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {constituency.registered_voters}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{constituency.aspirant_A}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{constituency.aspirant_B}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {constituency.spoiled_votes}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{constituency.total_votes}</span>
-                  </TableCell>
+          <div className="flex justify-start flex-1 my-10"></div>
+          <div className="flex justify-start flex-1">
+            {loading && (
+              <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
+            )}
+          </div>
 
-                  <TableCell>
-                    <Link
-                      to={
-                        "/app/wards?criteria=by-const&const_code=" +
-                        constituency.const_code +
-                        "&const_name=" +
-                        constituency.const_name
-                      }
-                    >
-                      <Button size="small" className="mr-1">
-                        Wards
-                      </Button>
-                    </Link>
-                    <Link
-                      to={
-                        "/app/registration-centres?criteria=by-const&const_code=" +
-                        constituency.const_code +
-                        "&const_name=" +
-                        constituency.const_name
-                      }
-                    >
-                      <Button size="small" className="mr-1">
-                        Reg.Centres
-                      </Button>
-                    </Link>
-                    <Link
-                      to={
-                        "/app/polling-stations?criteria=by-const&const_code=" +
-                        constituency.const_code +
-                        "&const_name=" +
-                        constituency.const_name
-                      }
-                    >
-                      <Button size="small" className="mr-1">
-                        P.Sations
-                      </Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-        <TableFooter>
-          {totalResults && (
-            <Pagination
-              totalResults={totalResults}
-              resultsPerPage={resultsPerPage}
-              label="Table navigation"
-              onChange={onPageChange}
-            />
-          )}
-        </TableFooter>
-      </TableContainer>
+          <TableContainer>
+            <Table>
+              <TableHeader>
+                <tr>
+                  <TableCell>Code</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Registered Voters</TableCell>
+
+                  <TableCell>Spoiled Votes</TableCell>
+                  <TableCell>Total Votes</TableCell>
+                  <TableCell>Action</TableCell>
+                </tr>
+              </TableHeader>
+              <TableBody>
+                {data &&
+                  data.map((constituency, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <Badge type="success" className="py-1 px-4">
+                          {constituency.const_code}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">
+                          {constituency.const_name}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">
+                          {constituency.registered_voters}
+                        </span>
+                      </TableCell>
+
+                      <TableCell>
+                        <span className="text-sm">
+                          {constituency.spoiled_votes}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">
+                          {constituency.total_votes}
+                        </span>
+                      </TableCell>
+
+                      <TableCell>
+                        <Button
+                          size="small"
+                          className="mr-1"
+                          onClick={() => {
+                            setConstData(constituency);
+                            setShowConst(true);
+                          }}
+                        >
+                          Results
+                        </Button>
+                        <Link
+                          to={
+                            "/app/wards?criteria=by-const&const_code=" +
+                            constituency.const_code +
+                            "&const_name=" +
+                            constituency.const_name
+                          }
+                        >
+                          <Button size="small" className="mr-1">
+                            Wards
+                          </Button>
+                        </Link>
+                        <Link
+                          to={
+                            "/app/registration-centres?criteria=by-const&const_code=" +
+                            constituency.const_code +
+                            "&const_name=" +
+                            constituency.const_name
+                          }
+                        >
+                          <Button size="small" className="mr-1">
+                            Reg.Centres
+                          </Button>
+                        </Link>
+                        <Link
+                          to={
+                            "/app/polling-stations?criteria=by-const&const_code=" +
+                            constituency.const_code +
+                            "&const_name=" +
+                            constituency.const_name
+                          }
+                        >
+                          <Button size="small" className="mr-1">
+                            P.Sations
+                          </Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+            <TableFooter>
+              {totalResults && (
+                <Pagination
+                  totalResults={totalResults}
+                  resultsPerPage={resultsPerPage}
+                  label="Table navigation"
+                  onChange={onPageChange}
+                />
+              )}
+            </TableFooter>
+          </TableContainer>
+        </>
+      )}
     </>
   );
 }

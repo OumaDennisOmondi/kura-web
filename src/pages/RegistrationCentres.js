@@ -13,8 +13,7 @@ import ChartLegend from "../components/Chart/ChartLegend";
 import GridCard from "../components/Chart/GridCard";
 import PageTitle from "../components/Typography/PageTitle";
 import SectionTitle from "../components/Typography/SectionTitle";
-import RoundIcon from "../components/RoundIcon";
-import response from "../utils/demo/targetsData";
+import RegistrationCentre from "./RegistrationCentre";
 import {
   SearchIcon,
   MoonIcon,
@@ -53,8 +52,8 @@ function RegistrationCentres() {
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isShow, setIsShow] = useState(false);
-  const [registration_centre, setregistration_centre] = useState({});
+  const [showReg, setShowReg] = useState(false);
+  const [reg_data, setRegData] = useState({});
   const [registration_centres, setregistration_centres] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -79,8 +78,7 @@ function RegistrationCentres() {
     console.log(data.length);
   }
   function closeModal() {
-    setIsOpen(false);
-    setIsShow(false);
+    setShowReg(false);
   }
   const getregistration_centres = async (denomination = false) => {
     let url = "";
@@ -157,129 +155,133 @@ function RegistrationCentres() {
 
   return (
     <>
-      <PageTitle>Registration Centres</PageTitle>
-      <CTA description={"Registration Centres in " + denomination}></CTA>
+      {showReg ? (
+        <RegistrationCentre reg_data={reg_data} close={closeModal} />
+      ) : (
+        <>
+          <PageTitle>Registration Centres</PageTitle>
+          <CTA description={"Registration Centres in " + denomination}></CTA>
 
-      <div className="flex justify-start items-center flex-1 my-10">
-        <SectionTitle>
-          Currently Showing Registration Centers in {denomination}
-        </SectionTitle>
-      </div>
-      <div className="flex justify-start flex-1 lg:mr-32 mb-5">
-        <div className="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
-          <div className="absolute inset-y-0 flex items-center pl-2">
-            <SearchIcon className="w-4 h-4" aria-hidden="true" />
+          <div className="flex justify-start items-center flex-1 my-10">
+            <SectionTitle>
+              Currently Showing Registration Centers in {denomination}
+            </SectionTitle>
           </div>
-          <Input
-            className="pl-8 text-gray-700"
-            placeholder="Search for Registration Centres by Code or Name"
-            aria-label="Search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
-        <Button
-          className=" bg-blue-500"
-          onClick={() => getregistration_centres(true)}
-        >
-          Search
-        </Button>
-      </div>
-      <div className="flex justify-start flex-1">
-        {loading && (
-          <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
-        )}
-      </div>
+          <div className="flex justify-start flex-1 lg:mr-32 mb-5">
+            <div className="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
+              <div className="absolute inset-y-0 flex items-center pl-2">
+                <SearchIcon className="w-4 h-4" aria-hidden="true" />
+              </div>
+              <Input
+                className="pl-8 text-gray-700"
+                placeholder="Search for Registration Centres by Code or Name"
+                aria-label="Search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+            <Button
+              className=" bg-blue-500"
+              onClick={() => getregistration_centres(true)}
+            >
+              Search
+            </Button>
+          </div>
+          <div className="flex justify-start flex-1">
+            {loading && (
+              <img src={BarLoader} className="w-20 h-12" alt="refreshing.." />
+            )}
+          </div>
 
-      <TableContainer>
-        <Table>
-          <TableHeader>
-            <tr>
-              <TableCell>Code</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Registered Voters</TableCell>
-              <TableCell>Aspirant A</TableCell>
-              <TableCell>Aspirant B</TableCell>
-              <TableCell>Spoiled Votes</TableCell>
-              <TableCell>Total Votes</TableCell>
-              <TableCell>Action</TableCell>
-            </tr>
-          </TableHeader>
-          <TableBody>
-            {data &&
-              data.map((registration_centre, i) => (
-                <TableRow key={i}>
-                  <TableCell>
-                    <Badge type="success" className="py-1 px-4">
-                      {registration_centre.reg_centre_code}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {registration_centre.reg_centre_name}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {registration_centre.registered_voters}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {registration_centre.aspirant_A}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {registration_centre.aspirant_B}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {registration_centre.spoiled_votes}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">
-                      {registration_centre.total_votes}
-                    </span>
-                  </TableCell>
+          <TableContainer>
+            <Table>
+              <TableHeader>
+                <tr>
+                  <TableCell>Code</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Registered Voters</TableCell>
+                  <TableCell>Spoiled Votes</TableCell>
+                  <TableCell>Total Votes</TableCell>
+                  <TableCell>Action</TableCell>
+                </tr>
+              </TableHeader>
+              <TableBody>
+                {data &&
+                  data.map((registration_centre, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <Badge type="success" className="py-1 px-4">
+                          {registration_centre.reg_centre_code}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">
+                          {registration_centre.reg_centre_name}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">
+                          {registration_centre.registered_voters}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">
+                          {registration_centre.spoiled_votes}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">
+                          {registration_centre.total_votes}
+                        </span>
+                      </TableCell>
 
-                  <TableCell>
-                    <Link
-                      to={
-                        "/app/polling-stations?criteria=by-centre&const_code=" +
-                        registration_centre.const_code +
-                        "&const_name=" +
-                        registration_centre.const_name +
-                        "&caw_code=" +
-                        registration_centre.caw_code +
-                        "&caw_name=" +
-                        registration_centre.caw_name +
-                        "&reg_centre_name=" +
-                        registration_centre.reg_centre_name +
-                        "&reg_centre_code=" +
-                        registration_centre.reg_centre_code
-                      }
-                    >
-                      <Button size="small">P.Stations</Button>
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-        <TableFooter>
-          {totalResults && (
-            <Pagination
-              totalResults={totalResults}
-              resultsPerPage={resultsPerPage}
-              label="Table navigation"
-              onChange={onPageChange}
-            />
-          )}
-        </TableFooter>
-      </TableContainer>
+                      <TableCell>
+                        <Button
+                          size="small"
+                          className="mr-1"
+                          onClick={() => {
+                            setRegData(registration_centre);
+                            setShowReg(true);
+                          }}
+                        >
+                          Results
+                        </Button>
+                        <Link
+                          to={
+                            "/app/polling-stations?criteria=by-centre&const_code=" +
+                            registration_centre.const_code +
+                            "&const_name=" +
+                            registration_centre.const_name +
+                            "&caw_code=" +
+                            registration_centre.caw_code +
+                            "&caw_name=" +
+                            registration_centre.caw_name +
+                            "&reg_centre_name=" +
+                            registration_centre.reg_centre_name +
+                            "&reg_centre_code=" +
+                            registration_centre.reg_centre_code
+                          }
+                        >
+                          <Button size="small">P.Stations</Button>
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+            <TableFooter>
+              {totalResults && (
+                <Pagination
+                  totalResults={totalResults}
+                  resultsPerPage={resultsPerPage}
+                  label="Table navigation"
+                  onChange={onPageChange}
+                />
+              )}
+            </TableFooter>
+          </TableContainer>
+        </>
+      )}
     </>
   );
 }
